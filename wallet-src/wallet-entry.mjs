@@ -20,7 +20,7 @@ function derive(mnemonic) {
 }
 async function fetchTimeout(url, opts, ms) {
   const ctrl = new AbortController();
-  const timer = setTimeout(function() { ctrl.abort(); }, ms || 15000);
+  const timer = setTimeout(function() { ctrl.abort(); }, ms || 30000);
   try {
     return await fetch(url, Object.assign({}, opts || {}, { signal: ctrl.signal }));
   } finally { clearTimeout(timer); }
@@ -29,7 +29,7 @@ async function esplora(path) {
   let lastErr = null;
   for (const base of ESPLORA) {
     try {
-      const r = await fetchTimeout(base + path, undefined, 15000);
+      const r = await fetchTimeout(base + path, undefined, 30000);
       if (!r.ok) throw new Error('Esplora ' + r.status);
       return await r.json();
     } catch (e) { lastErr = e; }
@@ -40,7 +40,7 @@ async function esploraText(path, method, body) {
   let lastErr = null;
   for (const base of ESPLORA) {
     try {
-      const r = await fetchTimeout(base + path, method ? { method, body, headers: { 'Content-Type': 'text/plain' } } : undefined, 15000);
+      const r = await fetchTimeout(base + path, method ? { method, body, headers: { 'Content-Type': 'text/plain' } } : undefined, 30000);
       if (!r.ok) throw new Error('Esplora ' + r.status + ' ' + (await r.text()).slice(0, 200));
       return await r.text();
     } catch (e) { lastErr = e; }
@@ -51,7 +51,7 @@ async function lowestFeeRate() {
   const rates = [];
   for (const base of ESPLORA) {
     try {
-      const r = await fetchTimeout(base + '/fee-estimates', undefined, 15000);
+      const r = await fetchTimeout(base + '/fee-estimates', undefined, 30000);
       if (!r.ok) continue;
       const f = await r.json();
       const v = Number(f['6'] || f['3'] || f['1']);
@@ -59,7 +59,8 @@ async function lowestFeeRate() {
     } catch (e) {}
   }
   if (!rates.length) return 1;
-  return Math.max(1, Math.ceil(Math.min(...rates)));
+  // Signet blocks are mostly empty, so 1 sat per vbyte confirms fine. Cap the rate so a stale high estimate from one provider can never make a small testnet send cost more in fees than the amount sent.
+  return Math.min(5, Math.max(1, Math.ceil(Math.min(...rates))));
 }
 window.LearnSatsWallet = {
   async create() {
