@@ -14,9 +14,10 @@ LearnSats is one loop, end to end, in the browser.
 
 1. Read a short lesson. There are 5 lessons, each about 3 minutes, each with a Nigerian example.
 2. Take its quiz. Each quiz has 3 questions. Get 2 or more right to pass.
-3. Earn 100 demo sats for each quiz you pass, once per lesson. That is 500 demo sats in total if you pass all 5.
+3. Earn 100 demo sats for each quiz you pass, once per lesson. That is 500 demo sats in total if you pass all 5. Get all 3 questions right in a row in a quiz for a 25 demo sats streak bonus, once per lesson. Pass the Quick challenge with 4 or more of 5 correct for a 50 demo sats bonus, once per day.
 4. Practise in the demo wallet. Create a demo invoice to receive, or send demo sats to a demo address, with a confirm screen first.
 5. Ask Sats, the on-device tutor, for help in simple English.
+6. Try the Quick challenge, earn badges, climb levels, and check the sample leaderboard.
 
 ## Lessons
 
@@ -26,13 +27,25 @@ LearnSats is one loop, end to end, in the browser.
 4. Sending and receiving sats. Invoices, QR codes, checking the amount before you confirm.
 5. Stay safe. Common scams, verify addresses, start small, keep your seed phrase offline.
 
-Each lesson has 3 to 4 short sections, a key takeaway box, and a 3 question quiz. Wrong answers show the correct simple explanation, with no shaming.
+Each lesson has 3 to 4 short sections, a key takeaway box, a short Pidgin takeaway line labelled Pidgin, and a 3 question quiz. Wrong answers show the correct simple explanation, with no shaming.
+
+## Levels, badges, streaks, and challenge
+
+Levels are based on lessons passed: 0 lessons is Newcomer, 1 is Sats Scholar, 2 or 3 is Lightning Learner, 4 or 5 is Bitcoin Builder. Each passed lesson earns a badge, shown on the lesson card and in a badges row: Bitcoin Basics, Key Keeper, Lightning Fast, Sats Sender, and Safety Star. A streak counter tracks consecutive correct quiz answers in a row, saved in the browser. Quiz answers animate right away, with progress dots for the 3 questions and a small confetti burst on a pass. The wallet balance counts up when demo sats are earned, and a send shows steps for invoice, route, and confirm, then a success state.
+
+Earn amounts, all demo sats, not real BTC: 100 base per passed lesson quiz, once per lesson, 25 streak bonus for 3 correct in a row inside a quiz, once per lesson, 50 Quick challenge bonus for 4 or more of 5 correct, once per day. The Quick challenge draws 5 random questions from all lessons, with 30 seconds per question.
+
+The sample leaderboard is labelled Sample learners and is sample only. It shows 4 sample names with sample demo sats totals, beside your current demo sats total. These are not real users, and no real user data is used.
 
 ## Demo wallet warning
 
 Demo sats are not real BTC. No real money is used in LearnSats.
 
 The built in wallet starts at 0 demo sats. It is not connected to Bitcoin or Lightning. It makes no real payment and creates no real transaction. Demo invoice codes and demo references are practice codes only, not real Lightning invoices and not real transaction hashes. The demo label appears on the home screen, in the wallet, in the footer, and in this README.
+
+## Quick challenge
+
+A practice challenge in its own tab. 5 random questions from all 5 lessons, 30 seconds per question, one question at a time. Pass with 4 or more correct to earn 50 demo sats, once per day. The date of the last earned bonus is saved in the browser, so a second pass on the same day is practice only, with no extra bonus.
 
 ## Ask Sats tutor
 
@@ -64,9 +77,9 @@ Files:
 * Usefulness and social impact: a plain English path for students, market traders, and families in Nigeria to learn Bitcoin safely before they use real money.
 * Security by design: the demo wallet has no real money, the seed phrase lesson teaches never to share it, the send flow has a confirm screen with amount and fee 0, and no personal data leaves the browser.
 * UX and UI quality: mobile first, clean layout, one warm gold accent for Bitcoin, clear labels, helpful errors, accessible contrast, simple copy free of jargon.
-* Working MVP: the full loop works in the browser. Learn, quiz, earn, receive, send, history, reset, and tutor all run with no backend.
+* Working MVP: the full loop works in the browser. Learn, quiz, earn, receive, send, history, reset, tutor, challenge, levels, badges, and streaks all run with no backend.
 * Clear pitch: the Pitch tab in the app states the problem, how it works, who it helps, what is demo, and what is next.
 
 ## What is next
 
-Add more lessons in Nigerian Pidgin, add a practice Lightning testnet mode with clear warnings, add offline lesson packs for low data areas, and test with students and traders to improve the wording.
+Add full Pidgin lesson versions, add a practice Lightning testnet mode with clear warnings, add offline lesson packs for low data areas, and test with students and traders to improve the wording.
