@@ -18,6 +18,7 @@ LearnSats is one loop, end to end, in the browser.
 4. Practise in the demo wallet. Create a demo invoice to receive, or send demo sats to a demo address, with a confirm screen first.
 5. Ask Sats, the on-device tutor, for help in simple English.
 6. Try the Quick challenge, earn badges, climb levels, and check the sample leaderboard.
+7. Open the Real Wallet tab to create a real Bitcoin Signet testnet wallet, get test coins from the faucet, and send a real testnet transaction. See the Real Wallet section below.
 
 ## Lessons
 
@@ -36,6 +37,20 @@ Levels are based on lessons passed: 0 lessons is Newcomer, 1 is Sats Scholar, 2 
 Earn amounts, all demo sats, not real BTC: 100 base per passed lesson quiz, once per lesson, 25 streak bonus for 3 correct in a row inside a quiz, once per lesson, 50 Quick challenge bonus for 4 or more of 5 correct, once per day. The Quick challenge draws 5 random questions from all lessons, with 30 seconds per question.
 
 The sample leaderboard is labelled Sample learners and is sample only. It shows 4 sample names with sample demo sats totals, beside your current demo sats total. These are not real users, and no real user data is used.
+
+## Real Wallet, Bitcoin Signet testnet
+
+The Real Wallet tab is a real Bitcoin wallet on Signet, the Bitcoin test network. Its coins are test coins, worth nothing. No real money is used, and no real Bitcoin is ever sent.
+
+How it works, in the browser only:
+
+* Create a wallet: 12 words are generated in the browser, and a real Signet P2WPKH address starting tb1 is derived from them, using BIP39 and BIP84. The words and the address are saved in the browser only, in localStorage. Write the 12 words on paper and keep them offline. Never share them, and never send real Bitcoin to this testnet address.
+* Real balance: the balance, unspent outputs, and recent transactions are read live from the Blockstream and mempool.space Signet Esplora APIs, with the current block height and fee rate shown. Nothing is invented. If the API cannot be reached, the app shows the error instead of a made up balance.
+* Get test coins: paste only the address at the Signet faucet at https://signetfaucet.com/ , which sends 1,000 to 10,000 test sats per request. The faucet never needs the 12 words.
+* Real send: enter a Signet address and an amount in test sats, review the fee and change first, then confirm. The app builds a real transaction from the real unspent outputs, signs it in the browser with the stored key, and broadcasts it through the Esplora API. The real transaction ID is shown with a link to the explorer.
+* Lightning invoice check: paste a BOLT11 invoice to read its network, amount, description, expiry, and payment hash. A testnet invoice starting lntb is labelled testnet. A mainnet invoice starting lnbc is flagged with a warning not to pay it here. This only reads the invoice. It does not pay it, because this wallet has no Lightning node.
+
+Libraries, bundled into wallet.bundle.js with esbuild: @scure/bip39 2.4.0, @scure/bip32 1.4.0, @scure/btc-signer 2.4.1, light-bolt11-decoder 3.2.0, and qrcode 1.5.4 for the address QR code. The source is in wallet-src/wallet-entry.mjs. Verified in testing: address generation matches the known BIP84 test vector, a fresh address reads a 0 balance at Signet height 331409, a testnet BOLT11 invoice for 1,500 sats decodes correctly, and a send with no funds is blocked with a clear error.
 
 ## Demo wallet warning
 
@@ -63,23 +78,25 @@ All progress, balance, and history stay in the browser, in localStorage. Use the
 
 ## Architecture
 
-Single page static app. One file, index.html, holds the layout, the styles, and the script, so it loads fast on a mid-range phone and on low bandwidth.
+Static app with no backend. index.html holds the layout, the styles, and the lesson and demo wallet script, so it loads fast on a mid-range phone and on low bandwidth. wallet.bundle.js holds the real testnet wallet code, bundled from wallet-src/wallet-entry.mjs.
 
 The script holds the lesson content as data, the quiz logic, the demo wallet state, the receive and send flows, and the on-device tutor. State is saved to localStorage under learnsats-v1. The visual code on the receive screen is a simple 7 by 7 pattern made from the demo invoice code, for practice only. It is not a real QR code.
 
 Files:
 
 * index.html, the full app
+* wallet.bundle.js, the bundled real testnet wallet code, loaded by index.html
+* wallet-src/wallet-entry.mjs, the source for wallet.bundle.js
 * README.md, this file
 
 ## Judging criteria
 
 * Usefulness and social impact: a plain English path for students, market traders, and families in Nigeria to learn Bitcoin safely before they use real money.
-* Security by design: the demo wallet has no real money, the seed phrase lesson teaches never to share it, the send flow has a confirm screen with amount and fee 0, and no personal data leaves the browser.
+* Security by design: the demo wallet has no real money, the seed phrase lesson teaches never to share it, the send flow has a confirm screen with amount and fee 0, and no personal data leaves the browser. The Real Wallet is testnet only, its key stays in the browser, its balance and transactions come from the public Esplora API, and a mainnet invoice is flagged, never paid.
 * UX and UI quality: mobile first, clean layout, one warm gold accent for Bitcoin, clear labels, helpful errors, accessible contrast, simple copy free of jargon.
-* Working MVP: the full loop works in the browser. Learn, quiz, earn, receive, send, history, reset, tutor, challenge, levels, badges, and streaks all run with no backend.
+* Working MVP: the full loop works in the browser. Learn, quiz, earn, receive, send, history, reset, tutor, challenge, levels, badges, and streaks all run with no backend. The Real Wallet creates a real Signet address, reads a real balance from Esplora, and sends a real testnet transaction.
 * Clear pitch: the Pitch tab in the app states the problem, how it works, who it helps, what is demo, and what is next.
 
 ## What is next
 
-Add full Pidgin lesson versions, add a practice Lightning testnet mode with clear warnings, add offline lesson packs for low data areas, and test with students and traders to improve the wording.
+Add full Pidgin lesson versions, add offline lesson packs for low data areas, and test with students and traders to improve the wording. The Lightning testnet mode is now built as the Real Wallet tab, with a BOLT11 invoice check and a real Signet wallet.

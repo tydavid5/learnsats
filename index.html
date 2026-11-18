@@ -111,6 +111,7 @@ footer { text-align: center; color: #555555; font-size: 13px; padding: 24px 16px
 <div class="tabs">
 <button class="tab-btn active" type="button" id="tab-learn" onclick="showPanel('learn')">Learn</button>
 <button class="tab-btn" type="button" id="tab-wallet" onclick="showPanel('wallet')">Wallet</button>
+<button class="tab-btn" type="button" id="tab-real" onclick="showPanel('real')">Real Wallet</button>
 <button class="tab-btn" type="button" id="tab-tutor" onclick="showPanel('tutor')">Ask Sats</button>
 <button class="tab-btn" type="button" id="tab-pitch" onclick="showPanel('pitch')">Pitch</button>
 <button class="tab-btn" type="button" id="tab-challenge" onclick="showPanel('challenge')">Challenge</button>
@@ -154,6 +155,45 @@ footer { text-align: center; color: #555555; font-size: 13px; padding: 24px 16px
 </div>
 </section>
 
+<section class="panel" id="panel-real">
+<div class="card">
+<h2>Real Wallet</h2>
+<p><strong>Testnet only. Signet.</strong> This is a real Bitcoin testnet wallet. Its coins are test coins, worth nothing. No real money is used, and no real Bitcoin is ever sent here.</p>
+<p class="small">Your wallet key is created in this browser and stays in this browser only. Write your 12 words on paper and keep them offline. Never share them with anyone, and never send real Bitcoin to this testnet address.</p>
+<div id="realSetup"></div>
+<div id="realMain" style="display:none">
+<p>Address: <strong><span id="realAddressText"></span></strong></p>
+<div id="realQr"></div>
+<p><button class="btn secondary" type="button" onclick="copyRealAddress()">Copy address</button> <a id="realExplorerLink" href="#" target="_blank" rel="noopener">View on explorer</a></p>
+<h3>Real balance</h3>
+<p>Balance: <strong><span id="realBalanceText">Not checked yet</span></strong></p>
+<p class="small" id="realMetaText"></p>
+<button class="btn secondary" type="button" onclick="refreshReal()">Refresh balance</button>
+<div id="realTxList"></div>
+<h3>Get test coins</h3>
+<p class="small">Paste only your address at the Signet faucet, never your 12 words. The faucet sends 1,000 to 10,000 test sats per request.</p>
+<p><a href="https://signetfaucet.com/" target="_blank" rel="noopener">Signet faucet</a></p>
+<h3>Send test sats</h3>
+<p class="small">Send to a Signet address starting tb1. The fee is a real testnet fee, shown before you confirm.</p>
+<label for="realSendAmount">Amount in test sats</label>
+<input id="realSendAmount" type="number" min="1" placeholder="Example: 1000">
+<label for="realSendDest">Signet address</label>
+<input id="realSendDest" type="text" placeholder="Example: tb1q...">
+<button class="btn full" type="button" onclick="reviewRealSend()">Review send</button>
+<div id="realSendPreview"></div>
+<div id="realSendResult"></div>
+<h3>Check a Lightning invoice</h3>
+<p class="small">Paste a BOLT11 invoice to read its network, amount, description, and expiry. This only reads the invoice. It does not pay it, and this wallet has no Lightning node.</p>
+<label for="realInvoiceText">Lightning invoice</label>
+<textarea id="realInvoiceText" rows="3" placeholder="Example: lntb..."></textarea>
+<button class="btn full" type="button" onclick="checkRealInvoice()">Check invoice</button>
+<div id="realInvoiceResult"></div>
+<button class="btn danger full" type="button" onclick="wipeRealWallet()">Delete this testnet wallet</button>
+<p class="small">Delete removes the key from this browser only. If you did not write the 12 words down, the test coins on it are lost.</p>
+</div>
+</div>
+</section>
+
 <section class="panel" id="panel-tutor">
 <div class="card">
 <h2>Ask Sats</h2>
@@ -192,11 +232,11 @@ footer { text-align: center; color: #555555; font-size: 13px; padding: 24px 16px
 <h3>Problem</h3>
 <p>Many Nigerians hear about Bitcoin but have no simple safe place to learn it and try a wallet.</p>
 <h3>How it works</h3>
-<p>LearnSats is one loop. Read a short lesson. Take a 3 question quiz. Pass and earn 100 demo sats. Then practise receiving and sending those demo sats in the built in demo wallet. Ask Sats, the on-device tutor, helps in simple English.</p>
+<p>LearnSats is one loop. Read a short lesson. Take a 3 question quiz. Pass and earn 100 demo sats. Then practise receiving and sending those demo sats in the built in demo wallet. When you are ready, open the Real Wallet tab to create a real Signet testnet wallet and try a real testnet transaction. Ask Sats, the on-device tutor, helps in simple English.</p>
 <h3>Who it helps</h3>
 <p>Students like Ada in Ibadan who want to understand Bitcoin before they use it. Market traders like Chidi who want fast small payments without cash. Families who receive money from relatives abroad and want to understand the options safely.</p>
 <h3>What is demo</h3>
-<p>Everything with money here is demo. Demo sats are not real BTC. The wallet is not connected to Bitcoin or Lightning. No real payment is made, and no real transaction is created.</p>
+<p>Everything with money in the lessons and the demo wallet is demo. Demo sats are not real BTC. No real payment is made there, and no real transaction is created. The Real Wallet tab is different: it is a real Bitcoin Signet testnet wallet, with a real address, a real balance read from the Esplora API, and real testnet sending. Its coins are test coins, worth nothing.</p>
 <h3>What is next</h3>
 <p>Next, add more lessons in Nigerian Pidgin, add a practice Lightning testnet mode with clear warnings, add offline lesson packs for low data areas, and test with students and traders to improve the wording.</p>
 </div>
@@ -207,6 +247,7 @@ footer { text-align: center; color: #555555; font-size: 13px; padding: 24px 16px
 <p><strong>Demo only.</strong> Demo sats are not real BTC. No real money, no real Bitcoin, and no real Lightning payment is used in LearnSats. All progress stays in your browser.</p>
 <p>LearnSats. Built for the Dakar Bitcoin Hack by BTrust, November 2026.</p>
 </footer>
+<script src="wallet.bundle.js"></script>
 <script>
 var LESSONS = [
 {
@@ -374,7 +415,7 @@ function animateBalance(from, to) {
   }, 40);
 }
 function showPanel(name) {
-  var panels = ["learn", "wallet", "tutor", "pitch", "challenge"];
+  var panels = ["learn", "wallet", "real", "tutor", "pitch", "challenge"];
   var i = 0;
   while (i < panels.length) {
     var p = panels[i];
@@ -385,6 +426,7 @@ function showPanel(name) {
     i = i + 1;
   }
   if (name === "wallet") { renderHistory(); }
+  if (name === "real") { renderRealWallet(); }
   if (name === "learn") { renderLeaderboard(); }
   if (name === "challenge") { renderChallengeStatus(); }
   if (name === "tutor") { renderTutorNext(); }
@@ -880,6 +922,119 @@ updateWallet();
 renderLessonList();
 renderHistory();
 renderTutorNext();
+function escHtml(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+var realPreview = null;
+function renderRealWallet() {
+  var w = null;
+  try { w = window.LearnSatsWallet ? window.LearnSatsWallet.load() : null; } catch (e) { w = null; }
+  var setup = document.getElementById("realSetup");
+  var main = document.getElementById("realMain");
+  if (!w) {
+    if (setup) { setup.innerHTML = '<p>No real wallet yet.</p><button class="btn full" type="button" onclick="createRealWallet()">Create a real testnet wallet</button><p class="small">This creates 12 words and a Signet address in this browser only.</p>'; }
+    if (main) { main.style.display = "none"; }
+    return;
+  }
+  if (setup) { setup.innerHTML = ""; }
+  if (main) { main.style.display = "block"; }
+  document.getElementById("realAddressText").textContent = w.address;
+  var link = document.getElementById("realExplorerLink");
+  if (link) { link.href = "https://mempool.space/signet/address/" + encodeURIComponent(w.address); }
+  window.LearnSatsWallet.qr(w.address).then(function(u) { var q = document.getElementById("realQr"); if (q) { q.innerHTML = '<img src="' + u + '" alt="QR code for the testnet address" style="width:200px;height:200px">'; } }).catch(function() {});
+}
+async function createRealWallet() {
+  var setup = document.getElementById("realSetup");
+  if (setup) { setup.innerHTML = "<p>Creating your testnet wallet...</p>"; }
+  try {
+    var w = await window.LearnSatsWallet.create();
+    if (setup) { setup.innerHTML = '<p class="success">Wallet created. Write these 12 words on paper now. They are shown once here.</p><div class="code-box">' + escHtml(w.mnemonic) + '</div><button class="btn secondary" type="button" onclick="copyRealMnemonic()">Copy 12 words</button>'; }
+    renderRealWalletKeepMnemonic();
+  } catch (e) { if (setup) { setup.innerHTML = '<p class="error">Could not create the wallet: ' + escHtml(e.message || e) + '</p>'; } }
+}
+function renderRealWalletKeepMnemonic() {
+  var main = document.getElementById("realMain");
+  if (main) { main.style.display = "block"; }
+  var w = window.LearnSatsWallet.load();
+  if (w) {
+    document.getElementById("realAddressText").textContent = w.address;
+    var link = document.getElementById("realExplorerLink");
+    if (link) { link.href = "https://mempool.space/signet/address/" + encodeURIComponent(w.address); }
+    window.LearnSatsWallet.qr(w.address).then(function(u) { var q = document.getElementById("realQr"); if (q) { q.innerHTML = '<img src="' + u + '" alt="QR code for the testnet address" style="width:200px;height:200px">'; } }).catch(function() {});
+  }
+}
+function copyRealMnemonic() {
+  var w = window.LearnSatsWallet.load();
+  if (w && navigator.clipboard) { navigator.clipboard.writeText(w.mnemonic); }
+}
+function copyRealAddress() {
+  var w = window.LearnSatsWallet.load();
+  if (w && navigator.clipboard) { navigator.clipboard.writeText(w.address); }
+}
+async function refreshReal() {
+  var w = window.LearnSatsWallet.load();
+  if (!w) { return; }
+  var bal = document.getElementById("realBalanceText");
+  if (bal) { bal.textContent = "Checking..."; }
+  try {
+    var r = await window.LearnSatsWallet.refresh(w.address);
+    if (bal) { bal.textContent = String(r.balance) + " test sats"; }
+    var meta = document.getElementById("realMetaText");
+    if (meta) { meta.textContent = "Confirmed " + String(r.confirmed) + " sats, in mempool " + String(r.mempool) + " sats. Block height " + String(r.height) + ". Fee about " + String(r.feeRate) + " sats per vbyte. " + String(r.utxos.length) + " unspent outputs."; }
+    var list = document.getElementById("realTxList");
+    if (list) {
+      if (!r.txs || r.txs.length === 0) { list.innerHTML = "<p class=\"small\">No testnet transactions yet. Get test coins from the faucet above.</p>"; }
+      else {
+        var html = "<h3>Recent transactions</h3>";
+        var i = 0;
+        while (i < r.txs.length) { var t = r.txs[i]; html += '<p class="small"><a href="https://mempool.space/signet/tx/' + escHtml(t.txid) + '" target="_blank" rel="noopener">' + escHtml(t.txid) + '</a> ' + (t.status && t.status.confirmed ? "confirmed" : "in mempool") + '</p>'; i = i + 1; }
+        list.innerHTML = html;
+      }
+    }
+  } catch (e) {
+    if (bal) { bal.textContent = "Could not check. " + (e.message || e); }
+  }
+}
+async function reviewRealSend() {
+  var dest = document.getElementById("realSendDest").value.trim();
+  var amt = document.getElementById("realSendAmount").value.trim();
+  var box = document.getElementById("realSendPreview");
+  var res = document.getElementById("realSendResult");
+  if (res) { res.innerHTML = ""; }
+  if (box) { box.innerHTML = "<p>Checking balance and fee...</p>"; }
+  try {
+    var p = await window.LearnSatsWallet.previewSend(dest, amt);
+    realPreview = p;
+    if (box) { box.innerHTML = '<p>Send <strong>' + escHtml(p.amount) + ' test sats</strong> to <span class="code-box">' + escHtml(p.dest) + '</span></p><p>Fee about ' + escHtml(p.fee) + ' test sats at ' + escHtml(String(p.feeRate)) + ' sats per vbyte. Change about ' + escHtml(p.change) + ' test sats. Total from your wallet ' + escHtml(p.total) + ' test sats.</p><button class="btn full" type="button" onclick="confirmRealSend()">Confirm and send test sats</button>'; }
+  } catch (e) { if (box) { box.innerHTML = '<p class="error">' + escHtml(e.message || e) + '</p>'; } }
+}
+async function confirmRealSend() {
+  if (!realPreview) { return; }
+  var res = document.getElementById("realSendResult");
+  if (res) { res.innerHTML = "<p>Sending...</p>"; }
+  try {
+    var r = await window.LearnSatsWallet.send(realPreview.dest, realPreview.amount);
+    realPreview = null;
+    if (res) { res.innerHTML = '<p class="success">Sent ' + escHtml(r.amount) + ' test sats. Transaction ID:</p><p><a href="https://mempool.space/signet/tx/' + escHtml(r.txid) + '" target="_blank" rel="noopener">' + escHtml(r.txid) + '</a></p><p class="small">Fee ' + escHtml(r.fee) + ' test sats. Check the balance again after the next block.</p>'; }
+    refreshReal();
+  } catch (e) { if (res) { res.innerHTML = '<p class="error">Send failed: ' + escHtml(e.message || e) + '</p>'; } }
+}
+function checkRealInvoice() {
+  var text = document.getElementById("realInvoiceText").value.trim();
+  var box = document.getElementById("realInvoiceResult");
+  try {
+    var d = window.LearnSatsWallet.decodeInvoice(text);
+    var warn = "";
+    if (d.network === "mainnet") { warn = '<p class="error">Warning: this is a mainnet invoice. Do not pay it here. This wallet is testnet only.</p>'; }
+    if (d.network === "testnet") { warn = '<p class="success">This is a testnet invoice.</p>'; }
+    if (box) { box.innerHTML = warn + '<p>Network: <strong>' + escHtml(d.network) + '</strong></p><p>Amount: <strong>' + (d.amountSats == null ? "no amount set" : escHtml(String(d.amountSats)) + " sats") + '</strong></p><p>Description: ' + escHtml(d.description || "none") + '</p><p>Expiry: ' + escHtml(String(d.expiry == null ? "not set" : d.expiry)) + ' seconds</p><p class="small">Payment hash: ' + escHtml(d.paymentHash || "none") + '</p>'; }
+  } catch (e) { if (box) { box.innerHTML = '<p class="error">' + escHtml(e.message || e) + '</p>'; } }
+}
+function wipeRealWallet() {
+  if (!confirm("Delete this testnet wallet from this browser?")) { return; }
+  window.LearnSatsWallet.wipe();
+  realPreview = null;
+  renderRealWallet();
+}
+
 </script>
 </body>
 </html>
