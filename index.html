@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LearnSats. Learn Bitcoin, earn demo sats.</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #FDFBF6; color: #1A1A1A; line-height: 1.6; }
+header { background: #1A1A1A; color: #FFFFFF; padding: 20px 16px; text-align: center; }
+header h1 { margin: 0; font-size: 28px; }
+header h1 span { color: #F2B705; }
+header p { margin: 8px 0 0 0; color: #E8E8E8; font-size: 15px; }
+.demo-banner { background: #FFF3CD; color: #5C4300; border-bottom: 2px solid #F2B705; padding: 10px 16px; text-align: center; font-weight: bold; font-size: 14px; }
+main { max-width: 720px; margin: 0 auto; padding: 16px 16px 48px 16px; }
+.wallet-card { background: #FFFFFF; border: 2px solid #F2B705; border-radius: 16px; padding: 20px; text-align: center; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.wallet-card .label { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #666666; }
+.wallet-card .balance { font-size: 44px; font-weight: bold; color: #1A1A1A; margin: 4px 0; }
+.wallet-card .unit { font-size: 16px; color: #666666; }
+.wallet-card p { margin: 6px 0; font-size: 14px; color: #444444; }
+.progress { background: #EEEEEE; border-radius: 10px; height: 12px; overflow: hidden; margin: 12px 0 4px 0; }
+.progress-fill { background: #F2B705; height: 12px; width: 0%; }
+.tabs { display: flex; gap: 8px; margin: 20px 0 16px 0; flex-wrap: wrap; }
+.tab-btn { flex: 1; min-width: 70px; padding: 12px 8px; border: 2px solid #1A1A1A; background: #FFFFFF; color: #1A1A1A; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; }
+.tab-btn.active { background: #F2B705; border-color: #F2B705; color: #1A1A1A; }
+.tab-btn:focus, button:focus, input:focus, textarea:focus { outline: 3px solid #F2B705; outline-offset: 2px; }
+section.panel { display: none; }
+section.panel.active { display: block; }
+.card { background: #FFFFFF; border: 1px solid #DDDDDD; border-radius: 14px; padding: 18px; margin: 12px 0; }
+.card h2 { margin-top: 0; font-size: 21px; }
+.card h3 { margin-bottom: 6px; font-size: 18px; }
+.lesson-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.badge { background: #E8F5E9; color: #1B5E20; padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; white-space: nowrap; }
+.badge.locked { background: #FFF3CD; color: #5C4300; }
+.btn { display: inline-block; background: #F2B705; color: #1A1A1A; border: 2px solid #F2B705; padding: 12px 18px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; }
+.btn.secondary { background: #FFFFFF; border-color: #1A1A1A; color: #1A1A1A; }
+.btn.danger { background: #FFFFFF; border-color: #B00020; color: #B00020; }
+.btn.full { width: 100%; margin-top: 10px; }
+.takeaway { background: #FFF8E1; border-left: 5px solid #F2B705; padding: 14px; border-radius: 8px; margin: 16px 0; }
+label { display: block; font-weight: bold; margin: 14px 0 6px 0; }
+input, textarea, select { width: 100%; padding: 12px; border: 2px solid #999999; border-radius: 10px; font-size: 16px; background: #FFFFFF; color: #1A1A1A; }
+.quiz-option { display: block; width: 100%; text-align: left; background: #FFFFFF; border: 2px solid #999999; color: #1A1A1A; padding: 12px; border-radius: 10px; font-size: 16px; margin: 8px 0; cursor: pointer; }
+.quiz-option.correct { border-color: #1B5E20; background: #E8F5E9; }
+.quiz-option.wrong { border-color: #B00020; background: #FDECEA; }
+.feedback { padding: 12px; border-radius: 10px; margin: 10px 0; font-size: 15px; }
+.feedback.good { background: #E8F5E9; color: #1B5E20; }
+.feedback.info { background: #FFF3CD; color: #5C4300; }
+.history-item { border-bottom: 1px solid #EEEEEE; padding: 10px 0; font-size: 15px; }
+.history-item:last-child { border-bottom: none; }
+.code-box { background: #1A1A1A; color: #F2B705; padding: 14px; border-radius: 10px; font-family: monospace; font-size: 14px; word-break: break-all; margin: 10px 0; }
+.visual-code { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; width: 168px; margin: 12px auto; }
+.visual-code div { aspect-ratio: 1; background: #EEEEEE; border-radius: 2px; }
+.visual-code div.on { background: #1A1A1A; }
+.tutor-answer { background: #FFF8E1; border: 1px solid #F2B705; border-radius: 12px; padding: 14px; margin-top: 12px; white-space: pre-wrap; }
+.suggestion { display: inline-block; background: #FFFFFF; border: 1px solid #999999; color: #1A1A1A; border-radius: 20px; padding: 6px 12px; margin: 4px 4px 0 0; font-size: 14px; cursor: pointer; }
+footer { text-align: center; color: #555555; font-size: 13px; padding: 24px 16px; border-top: 1px solid #DDDDDD; }
+.small { font-size: 13px; color: #555555; }
+.error { color: #B00020; font-weight: bold; }
+.success { color: #1B5E20; font-weight: bold; }
+@media (max-width: 480px) {
+  .wallet-card .balance { font-size: 36px; }
+  header h1 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Learn<span>Sats</span></h1>
+<p>Learn Bitcoin in plain English. Earn demo sats. Try a wallet, safely.</p>
+</header>
+<div class="demo-banner">Demo only. Demo sats are not real BTC. No real money is used here.</div>
+<main>
+<div class="wallet-card" id="walletCard">
+<div class="label">Your demo wallet balance</div>
+<div class="balance"><span id="balanceText">0</span> <span class="unit">demo sats</span></div>
+<p>Demo sats, not real BTC. You earn 100 demo sats for each quiz you pass.</p>
+<div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+<p id="progressText">0 of 5 lessons complete.</p>
+<button class="btn secondary" type="button" onclick="showPanel('wallet')">Open wallet</button>
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" type="button" id="tab-learn" onclick="showPanel('learn')">Learn</button>
+<button class="tab-btn" type="button" id="tab-wallet" onclick="showPanel('wallet')">Wallet</button>
+<button class="tab-btn" type="button" id="tab-tutor" onclick="showPanel('tutor')">Ask Sats</button>
+<button class="tab-btn" type="button" id="tab-pitch" onclick="showPanel('pitch')">Pitch</button>
+</div>
+
+<section class="panel active" id="panel-learn">
+<div class="card">
+<h2>Many Nigerians hear about Bitcoin but have no simple safe place to learn it and try a wallet.</h2>
+<p>That is the problem LearnSats solves. Read a short lesson, answer 3 questions, earn demo sats, then practise sending and receiving in a demo wallet. No bank account needed. No real money needed.</p>
+<p class="small">Start with Lesson 1. Each lesson takes about 3 minutes. You can do them in any order.</p>
+</div>
+<div id="lessonList"></div>
+<div id="lessonDetail"></div>
+</section>
+
+<section class="panel" id="panel-wallet">
+<div class="card">
+<h2>Demo wallet</h2>
+<p><strong>Demo sats, not real BTC.</strong> This wallet is for practice only. It is not connected to Bitcoin or Lightning. Nothing here is a real payment.</p>
+<p>Balance: <strong><span id="walletBalanceText">0</span> demo sats</strong></p>
+<h3>Receive demo sats</h3>
+<p class="small">Enter an amount to create a practice invoice. In a real wallet, you would share this code with the sender.</p>
+<label for="receiveAmount">Amount in demo sats</label>
+<input id="receiveAmount" type="number" min="1" max="100000" placeholder="Example: 500">
+<button class="btn full" type="button" onclick="makeReceiveCode()">Create demo invoice</button>
+<div id="receiveResult"></div>
+<h3>Send demo sats</h3>
+<p class="small">Send to a practice address. The fee is 0 demo sats. Always check the amount before you confirm.</p>
+<label for="sendAmount">Amount in demo sats</label>
+<input id="sendAmount" type="number" min="1" placeholder="Example: 100">
+<label for="sendAddress">Demo address or name</label>
+<input id="sendAddress" type="text" placeholder="Example: ada-demo-wallet">
+<button class="btn full" type="button" onclick="prepareSend()">Review send</button>
+<div id="sendResult"></div>
+<div id="sendConfirm"></div>
+<h3>History</h3>
+<div id="historyList"><p class="small">No demo activity yet. Pass a quiz to earn your first demo sats.</p></div>
+<button class="btn danger full" type="button" onclick="resetDemo()">Reset demo wallet and progress</button>
+<p class="small">Reset clears your demo balance, history, and lesson progress on this phone or computer only.</p>
+</div>
+</section>
+
+<section class="panel" id="panel-tutor">
+<div class="card">
+<h2>Ask Sats</h2>
+<p><strong>On-device tutor.</strong> This tutor runs in your browser using the lesson content. It is not a live large model and it is not connected to any API.</p>
+<label for="tutorQuestion">Ask a question in simple English</label>
+<input id="tutorQuestion" type="text" placeholder="Example: What are sats?">
+<button class="btn full" type="button" onclick="askTutor()">Ask</button>
+<p class="small">Try one:</p>
+<div>
+<button class="suggestion" type="button" onclick="askSuggestion('What is Bitcoin?')">What is Bitcoin?</button>
+<button class="suggestion" type="button" onclick="askSuggestion('What are sats?')">What are sats?</button>
+<button class="suggestion" type="button" onclick="askSuggestion('What is Lightning?')">What is Lightning?</button>
+<button class="suggestion" type="button" onclick="askSuggestion('What is a seed phrase?')">What is a seed phrase?</button>
+<button class="suggestion" type="button" onclick="askSuggestion('How do I send sats?')">How do I send sats?</button>
+<button class="suggestion" type="button" onclick="askSuggestion('Is this real money?')">Is this real money?</button>
+<button class="suggestion" type="button" onclick="askSuggestion('How do I stay safe?')">How do I stay safe?</button>
+</div>
+<div id="tutorAnswer"></div>
+<div id="tutorNext"></div>
+</div>
+</section>
+
+<section class="panel" id="panel-pitch">
+<div class="card">
+<h2>Pitch</h2>
+<h3>Problem</h3>
+<p>Many Nigerians hear about Bitcoin but have no simple safe place to learn it and try a wallet.</p>
+<h3>How it works</h3>
+<p>LearnSats is one loop. Read a short lesson. Take a 3 question quiz. Pass and earn 100 demo sats. Then practise receiving and sending those demo sats in the built in demo wallet. Ask Sats, the on-device tutor, helps in simple English.</p>
+<h3>Who it helps</h3>
+<p>Students like Ada in Ibadan who want to understand Bitcoin before they use it. Market traders like Chidi who want fast small payments without cash. Families who receive money from relatives abroad and want to understand the options safely.</p>
+<h3>What is demo</h3>
+<p>Everything with money here is demo. Demo sats are not real BTC. The wallet is not connected to Bitcoin or Lightning. No real payment is made, and no real transaction is created.</p>
+<h3>What is next</h3>
+<p>Next, add more lessons in Nigerian Pidgin, add a practice Lightning testnet mode with clear warnings, add offline lesson packs for low data areas, and test with students and traders to improve the wording.</p>
+</div>
+</section>
+</main>
+<footer>
+<p><strong>Demo only.</strong> Demo sats are not real BTC. No real money, no real Bitcoin, and no real Lightning payment is used in LearnSats. All progress stays in your browser.</p>
+<p>LearnSats. Built for the Dakar Bitcoin Hack by BTrust, November 2026.</p>
+</footer>
+<script>
+var LESSONS = [
+{
+id: 1,
+title: "1. What is Bitcoin?",
+time: "About 3 minutes",
+sections: [
+{ heading: "Money without a bank", text: "Bitcoin is digital money that people can send to each other without a bank in the middle. Ada, a student in Ibadan, can receive Bitcoin from a friend in Lagos directly, phone to phone, without asking a bank to approve it." },
+{ heading: "A fixed supply", text: "There will only ever be 21 million bitcoin. No one can print more. That fixed limit is part of why people compare Bitcoin to digital gold. It is scarce by design." },
+{ heading: "Anyone can use it", text: "You do not need a bank account to use Bitcoin. You need a wallet, which is like a small app that holds your money, and an internet connection. A market trader, a student, and a family in a village can all use the same network." },
+{ heading: "A Nigerian example", text: "Chidi sells tomatoes in a market. A customer has no cash and no change. With Bitcoin, the customer can pay the exact amount in sats, and Chidi can see it arrive in his wallet. No change needed." }
+],
+takeaway: "Bitcoin is money you can send without a bank. Only 21 million will ever exist, and anyone with a wallet can use it.",
+quiz: [
+{ q: "What is Bitcoin?", options: ["Digital money you can send without a bank", "A new bank in Nigeria", "A type of paper cash"], answer: 0, explain: "Bitcoin is digital money that people can send to each other without a bank in the middle." },
+{ q: "How many bitcoin will ever exist?", options: ["21 million", "100 million", "There is no limit"], answer: 0, explain: "There will only ever be 21 million bitcoin. That fixed supply makes it scarce." },
+{ q: "What do you need to use Bitcoin?", options: ["A wallet and an internet connection", "A bank account only", "A credit card only"], answer: 0, explain: "You need a wallet and an internet connection. You do not need a bank account." }
+]
+},
+{
+id: 2,
+title: "2. Your wallet and keys",
+time: "About 3 minutes",
+sections: [
+{ heading: "What a wallet is", text: "A wallet is an app that holds your Bitcoin and lets you send and receive it. It shows your balance and your history. Think of it like a purse for digital money. The wallet in LearnSats is a demo wallet for practice only." },
+{ heading: "Your seed phrase", text: "When you create a real wallet, you get a seed phrase. That is a list of 12 or 24 simple words, in a set order. Those words can restore your wallet if you lose your phone. Keep them safe." },
+{ heading: "Never share it", text: "Never share your seed phrase with anyone, not a friend, not support, not a website. Anyone with your seed phrase can take your money. A real support team will never ask for it." },
+{ heading: "Demo wallet only here", text: "LearnSats has no real seed phrase and no real money. You practise here so you learn the habit first: keep your words private, and keep them offline on paper." }
+],
+takeaway: "A wallet holds your Bitcoin. Your seed phrase can restore it, so never share it with anyone, and keep it offline.",
+quiz: [
+{ q: "What is a wallet?", options: ["An app that holds Bitcoin and lets you send and receive it", "A bank branch", "A paper receipt"], answer: 0, explain: "A wallet is an app that holds your Bitcoin and lets you send and receive it." },
+{ q: "What is a seed phrase?", options: ["A list of words that can restore your wallet", "Your phone password", "A bank PIN"], answer: 0, explain: "A seed phrase is a list of 12 or 24 words, in a set order, that can restore your wallet." },
+{ q: "Who should you share your seed phrase with?", options: ["No one", "A support agent who asks for it", "A friend who helps you"], answer: 0, explain: "Never share your seed phrase with anyone. A real support team will never ask for it." }
+]
+},
+{
+id: 3,
+title: "3. Lightning Network",
+time: "About 3 minutes",
+sections: [
+{ heading: "Fast small payments", text: "The Lightning Network is a fast layer on top of Bitcoin. It is built for small, quick payments, like paying for a bottle of water, a bus fare, or a single tomato. It works in seconds, not minutes." },
+{ heading: "What is a sat?", text: "A sat, short for satoshi, is a tiny part of a bitcoin. 100 million sats make 1 bitcoin. That means you can pay a small amount, like 500 sats, without buying a whole bitcoin." },
+{ heading: "Why small payments matter", text: "In Nigeria, many daily payments are small. Cash needs change. Cards need a machine. Lightning lets you pay the exact small amount, fast, from your phone." },
+{ heading: "A Nigerian example", text: "Ada buys groundnuts for 200 sats worth of value in a demo. She scans, confirms, and the seller sees it at once. That is the kind of small payment Lightning is made for." }
+],
+takeaway: "Lightning is a fast layer for small Bitcoin payments. 100 million sats make 1 bitcoin, so you can pay tiny amounts.",
+quiz: [
+{ q: "What is Lightning built for?", options: ["Fast small payments", "Slow large bank transfers", "Paper money"], answer: 0, explain: "Lightning is a fast layer on top of Bitcoin, built for small, quick payments." },
+{ q: "How many sats make 1 bitcoin?", options: ["100 million", "100", "1,000"], answer: 0, explain: "100 million sats make 1 bitcoin. A sat is a tiny part of a bitcoin." },
+{ q: "Which payment fits Lightning best?", options: ["A small payment for groundnuts", "Buying a house in cash", "A paper cheque"], answer: 0, explain: "Lightning fits small daily payments, like a bottle of water or groundnuts." }
+]
+},
+{
+id: 4,
+title: "4. Sending and receiving sats",
+time: "About 3 minutes",
+sections: [
+{ heading: "What is an invoice?", text: "To receive sats, you create an invoice. An invoice says the amount and who it is for. You share it with the sender, often as a QR code. The sender scans it and pays." },
+{ heading: "Check before you confirm", text: "Before you send, check three things: the amount, the person or address, and the fee. In LearnSats the fee is 0 demo sats. In a real wallet, the fee is shown before you confirm, so read it." },
+{ heading: "QR codes", text: "A QR code is a square pattern your phone camera can read. It holds the payment details so you do not have to type a long code. Scan, check the amount, then confirm." },
+{ heading: "Practise here first", text: "Use the Wallet tab here to practise. Create a demo invoice, copy it, then try a demo send. Make a mistake here and you lose demo sats only, not real money." }
+],
+takeaway: "To receive, create an invoice and share it. To send, check the amount, the address, and the fee, then confirm.",
+quiz: [
+{ q: "What does an invoice say?", options: ["The amount and who it is for", "Your bank password", "Your home address"], answer: 0, explain: "An invoice says the amount and who it is for. You share it with the sender." },
+{ q: "What should you check before you send?", options: ["The amount, the person, and the fee", "The weather", "The time of day"], answer: 0, explain: "Check the amount, the person or address, and the fee before you confirm." },
+{ q: "What is a QR code for?", options: ["It holds payment details so you do not type a long code", "It is a photo of your wallet", "It is a bank card"], answer: 0, explain: "A QR code holds the payment details. Scan it, check the amount, then confirm." }
+]
+},
+{
+id: 5,
+title: "5. Stay safe",
+time: "About 3 minutes",
+sections: [
+{ heading: "Common scams", text: "Watch for messages that promise free Bitcoin, or double your money if you send first. Those are scams. Also watch for fake support accounts and fake apps that look like a real wallet." },
+{ heading: "Verify addresses", text: "Bitcoin addresses are long and hard to read. Copy and paste them, then check the first and last few characters. A small change can send money to the wrong person." },
+{ heading: "Start small", text: "When you try something new with real money, start with a tiny amount. Test the full flow once with a small sum before you send a larger sum. That is how traders and students learn safely." },
+{ heading: "Keep your seed phrase offline", text: "Write your seed phrase on paper and keep it in a safe place at home. Do not store it in a photo, a chat, or an email. Offline paper is harder for a scammer to reach." }
+],
+takeaway: "Stay safe: ignore free money promises, verify addresses, start small, and keep your seed phrase on paper, offline.",
+quiz: [
+{ q: "Someone promises to double your Bitcoin if you send first. What is it?", options: ["A scam", "A safe offer", "A bank promotion"], answer: 0, explain: "That is a scam. No one can double your money for free. Do not send." },
+{ q: "How should you check a Bitcoin address?", options: ["Copy it and check the first and last few characters", "Trust it without checking", "Share it in a group chat"], answer: 0, explain: "Copy and paste the address, then check the first and last few characters." },
+{ q: "Where should you keep your seed phrase?", options: ["On paper, offline, in a safe place", "In a photo on your phone", "In an email to yourself"], answer: 0, explain: "Keep your seed phrase on paper, offline, in a safe place at home." }
+]
+}
+];
+var STORE_KEY = "learnsats-v1";
+var state = loadState();
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (parsed && typeof parsed.balance === "number") { return parsed; }
+    }
+  } catch (e) { }
+  return { balance: 0, passed: {}, mistakes: {}, history: [] };
+}
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { }
+}
+function showPanel(name) {
+  var panels = ["learn", "wallet", "tutor", "pitch"];
+  var i = 0;
+  while (i < panels.length) {
+    var p = panels[i];
+    var el = document.getElementById("panel-" + p);
+    var tab = document.getElementById("tab-" + p);
+    if (el) { el.classList.toggle("active", p === name); }
+    if (tab) { tab.classList.toggle("active", p === name); }
+    i = i + 1;
+  }
+  if (name === "wallet") { renderHistory(); }
+  if (name === "tutor") { renderTutorNext(); }
+  if (window.scrollTo) { try { window.scrollTo(0, 0); } catch (e) { } }
+}
+function updateWallet() {
+  var balanceEls = [document.getElementById("balanceText"), document.getElementById("walletBalanceText")];
+  var i = 0;
+  while (i < balanceEls.length) {
+    if (balanceEls[i]) { balanceEls[i].textContent = String(state.balance); }
+    i = i + 1;
+  }
+  var done = Object.keys(state.passed).length;
+  var fill = document.getElementById("progressFill");
+  if (fill) { fill.style.width = String(done * 20) + "%"; }
+  var text = document.getElementById("progressText");
+  if (text) { text.textContent = String(done) + " of 5 lessons complete. You have earned " + String(done * 100) + " demo sats from quizzes."; }
+}
+function renderLessonList() {
+  var list = document.getElementById("lessonList");
+  if (!list) { return; }
+  var html = "";
+  var i = 0;
+  while (i < LESSONS.length) {
+    var lesson = LESSONS[i];
+    var done = state.passed[lesson.id] ? true : false;
+    var badge = done ? '<span class="badge">Passed. 100 demo sats earned</span>' : '<span class="badge locked">Not done yet</span>';
+    html = html + '<div class="card"><div class="lesson-row"><div><h3>' + lesson.title + '</h3><p class="small">' + lesson.time + '</p></div>' + badge + '</div><button class="btn full" type="button" onclick="openLesson(' + lesson.id + ')">Open lesson</button></div>';
+    i = i + 1;
+  }
+  list.innerHTML = html;
+}
+var currentLesson = null;
+var quizAnswers = {};
+function openLesson(id) {
+  var lesson = null;
+  var i = 0;
+  while (i < LESSONS.length) {
+    if (LESSONS[i].id === id) { lesson = LESSONS[i]; }
+    i = i + 1;
+  }
+  if (!lesson) { return; }
+  currentLesson = lesson;
+  quizAnswers = {};
+  var detail = document.getElementById("lessonDetail");
+  var html = '<div class="card"><h2>' + lesson.title + '</h2><p class="small">' + lesson.time + ' . Read, then take the quiz below.</p>';
+  var s = 0;
+  while (s < lesson.sections.length) {
+    html = html + '<h3>' + lesson.sections[s].heading + '</h3><p>' + lesson.sections[s].text + '</p>';
+    s = s + 1;
+  }
+  html = html + '<div class="takeaway"><strong>Key takeaway:</strong> ' + lesson.takeaway + '</div>';
+  html = html + '<h3>Quiz. Answer 3 questions. Get 2 or more right to pass and earn 100 demo sats.</h3><div id="quizBox"></div><div id="quizResult"></div></div>';
+  detail.innerHTML = html;
+  renderQuiz();
+  if (detail.scrollIntoView) { detail.scrollIntoView(); }
+}
+function renderQuiz() {
+  var box = document.getElementById("quizBox");
+  if (!box || !currentLesson) { return; }
+  var html = "";
+  var i = 0;
+  while (i < currentLesson.quiz.length) {
+    var q = currentLesson.quiz[i];
+    html = html + '<div class="card"><p><strong>Question ' + String(i + 1) + ':</strong> ' + q.q + '</p>';
+    var o = 0;
+    while (o < q.options.length) {
+      var picked = quizAnswers[i] === o;
+      var cls = "quiz-option";
+      if (picked && o === q.answer) { cls = cls + " correct"; }
+      if (picked && o !== q.answer) { cls = cls + " wrong"; }
+      html = html + '<button class="' + cls + '" type="button" onclick="answerQuiz(' + String(i) + ', ' + String(o) + ')">' + q.options[o] + '</button>';
+      o = o + 1;
+    }
+    if (quizAnswers[i] !== undefined) {
+      var correct = quizAnswers[i] === q.answer;
+      var note = correct ? "Correct. Well done." : "Not quite. The simple answer is: " + q.explain;
+      html = html + '<div class="feedback ' + (correct ? "good" : "info") + '">' + note + '</div>';
+    }
+    html = html + '</div>';
+    i = i + 1;
+  }
+  html = html + '<button class="btn full" type="button" onclick="finishQuiz()">Check my quiz</button>';
+  box.innerHTML = html;
+}
+function answerQuiz(qi, oi) {
+  quizAnswers[qi] = oi;
+  renderQuiz();
+}
+function finishQuiz() {
+  if (!currentLesson) { return; }
+  var total = currentLesson.quiz.length;
+  var answered = Object.keys(quizAnswers).length;
+  var result = document.getElementById("quizResult");
+  if (answered < total) {
+    if (result) { result.innerHTML = '<div class="feedback info">Please answer all 3 questions first. You have answered ' + String(answered) + ' of 3.</div>'; }
+    return;
+  }
+  var score = 0;
+  var i = 0;
+  while (i < total) {
+    if (quizAnswers[i] === currentLesson.quiz[i].answer) { score = score + 1; }
+    i = i + 1;
+  }
+  var passed = score >= 2;
+  if (!passed) {
+    var key = String(currentLesson.id);
+    state.mistakes[key] = (state.mistakes[key] || 0) + 1;
+    saveState();
+    if (result) { result.innerHTML = '<div class="feedback info"><strong>You got ' + String(score) + ' of 3.</strong> You need 2 or more to pass. No demo sats this time. Read the lesson again, and try the quiz again. Ask Sats can help you with the parts you missed.</div>'; }
+    renderTutorNext();
+    return;
+  }
+  var already = state.passed[currentLesson.id] ? true : false;
+  if (!already) {
+    state.passed[currentLesson.id] = true;
+    state.balance = state.balance + 100;
+    state.history.push({ type: "earn", text: "Earned 100 demo sats for passing Lesson " + String(currentLesson.id) + " quiz", amount: 100, when: new Date().toLocaleString() });
+    saveState();
+  } else {
+    saveState();
+  }
+  updateWallet();
+  renderLessonList();
+  if (result) {
+    var msg = already ? '<strong>You got ' + String(score) + ' of 3. You passed again.</strong> You already earned the 100 demo sats for this lesson, so your balance stays the same. Try the Wallet tab to practise sending and receiving.' : '<strong>You got ' + String(score) + ' of 3. You passed.</strong> You earned 100 demo sats. Your new balance is ' + String(state.balance) + ' demo sats. Try the Wallet tab to practise sending and receiving.';
+    result.innerHTML = '<div class="feedback good">' + msg + '</div>';
+  }
+}
+function renderHistory() {
+  var list = document.getElementById("historyList");
+  if (!list) { return; }
+  if (state.history.length === 0) {
+    list.innerHTML = '<p class="small">No demo activity yet. Pass a quiz to earn your first demo sats.</p>';
+    return;
+  }
+  var html = "";
+  var i = state.history.length - 1;
+  while (i >= 0) {
+    var item = state.history[i];
+    html = html + '<div class="history-item"><strong>' + item.text + '</strong><br><span class="small">' + item.when + '</span></div>';
+    i = i - 1;
+  }
+  list.innerHTML = html;
+}
+function demoCode(prefix) {
+  var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  var out = "";
+  var i = 0;
+  while (i < 16) {
+    out = out + chars.charAt(Math.floor(Math.random() * chars.length));
+    i = i + 1;
+  }
+  return prefix + out;
+}
+function visualCode(code) {
+  var html = '<div class="visual-code" aria-label="Demo visual code">';
+  var i = 0;
+  while (i < 49) {
+    var ch = code.charCodeAt(i % code.length);
+    var on = ((ch + i) % 3 === 0) ? " on" : "";
+    html = html + '<div class="' + on + '"></div>';
+    i = i + 1;
+  }
+  html = html + '</div>';
+  return html;
+}
+function makeReceiveCode() {
+  var amountEl = document.getElementById("receiveAmount");
+  var out = document.getElementById("receiveResult");
+  var amount = Number(amountEl.value);
+  if (!amount || amount < 1) {
+    out.innerHTML = '<p class="error">Enter an amount of 1 demo sat or more.</p>';
+    return;
+  }
+  if (amount > 100000) {
+    out.innerHTML = '<p class="error">That amount is too large for a demo. Try 100,000 demo sats or less.</p>';
+    return;
+  }
+  var code = demoCode("ln-demo-");
+  window.lastReceiveCode = code;
+  window.lastReceiveAmount = amount;
+  out.innerHTML = '<p class="success">Demo invoice created for ' + String(amount) + ' demo sats.</p><div class="code-box">' + code + '</div>' + visualCode(code) + '<p class="small">This is a demo code only. It is not a real Lightning invoice, and it will not receive real money. Share it only for practice.</p><button class="btn secondary" type="button" onclick="copyReceiveCode()">Copy demo invoice</button>';
+}
+function copyReceiveCode() {
+  var code = window.lastReceiveCode || "";
+  if (!code) { return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code);
+  }
+  var out = document.getElementById("receiveResult");
+  if (out) { out.innerHTML = out.innerHTML + '<p class="success">Copied: ' + code + '</p>'; }
+}
+function prepareSend() {
+  var amountEl = document.getElementById("sendAmount");
+  var addressEl = document.getElementById("sendAddress");
+  var out = document.getElementById("sendResult");
+  var confirmBox = document.getElementById("sendConfirm");
+  var amount = Number(amountEl.value);
+  var address = addressEl.value.trim();
+  if (!amount || amount < 1) {
+    out.innerHTML = '<p class="error">Enter an amount of 1 demo sat or more.</p>';
+    confirmBox.innerHTML = "";
+    return;
+  }
+  if (amount > state.balance) {
+    out.innerHTML = '<p class="error">You do not have enough demo sats. Your balance is ' + String(state.balance) + ' demo sats. Pass a quiz to earn 100 demo sats.</p>';
+    confirmBox.innerHTML = "";
+    return;
+  }
+  if (!address) {
+    out.innerHTML = '<p class="error">Enter a demo address or name first.</p>';
+    confirmBox.innerHTML = "";
+    return;
+  }
+  window.pendingSend = { amount: amount, address: address };
+  out.innerHTML = '<p>Please check the details below before you confirm.</p>';
+  confirmBox.innerHTML = '<div class="card"><h3>Confirm send</h3><p>To: <strong>' + address + '</strong></p><p>Amount: <strong>' + String(amount) + ' demo sats</strong></p><p>Fee: <strong>0 demo sats</strong></p><p>Total: <strong>' + String(amount) + ' demo sats</strong></p><p class="small">Demo only. This is not a real payment.</p><button class="btn full" type="button" onclick="confirmSend()">Confirm demo send</button><button class="btn secondary full" type="button" onclick="cancelSend()">Cancel</button></div>';
+}
+function cancelSend() {
+  var confirmBox = document.getElementById("sendConfirm");
+  if (confirmBox) { confirmBox.innerHTML = ""; }
+}
+function confirmSend() {
+  var pending = window.pendingSend;
+  if (!pending) { return; }
+  if (pending.amount > state.balance) {
+    document.getElementById("sendResult").innerHTML = '<p class="error">You do not have enough demo sats now.</p>';
+    return;
+  }
+  state.balance = state.balance - pending.amount;
+  var ref = demoCode("demo-");
+  state.history.push({ type: "send", text: "Sent " + String(pending.amount) + " demo sats to " + pending.address + ". Demo reference: " + ref, amount: pending.amount, when: new Date().toLocaleString() });
+  saveState();
+  updateWallet();
+  renderHistory();
+  window.pendingSend = null;
+  document.getElementById("sendConfirm").innerHTML = "";
+  document.getElementById("sendResult").innerHTML = '<p class="success">Sent ' + String(pending.amount) + ' demo sats to ' + pending.address + '. Demo reference: ' + ref + '. This is not a real transaction.</p>';
+  document.getElementById("sendAmount").value = "";
+  document.getElementById("sendAddress").value = "";
+}
+function resetDemo() {
+  if (!window.confirm("Reset the demo? This clears your demo balance, history, and lesson progress on this device.")) { return; }
+  state = { balance: 0, passed: {}, mistakes: {}, history: [] };
+  saveState();
+  updateWallet();
+  renderLessonList();
+  renderHistory();
+  var detail = document.getElementById("lessonDetail");
+  if (detail) { detail.innerHTML = ""; }
+  var out = document.getElementById("receiveResult");
+  if (out) { out.innerHTML = ""; }
+  var sendOut = document.getElementById("sendResult");
+  if (sendOut) { sendOut.innerHTML = '<p class="success">Demo reset. Your balance is 0 demo sats.</p>'; }
+}
+function nextLessonSuggestion() {
+  var worstId = null;
+  var worstCount = 0;
+  var keys = Object.keys(state.mistakes);
+  var i = 0;
+  while (i < keys.length) {
+    var count = state.mistakes[keys[i]];
+    if (count > worstCount) { worstCount = count; worstId = Number(keys[i]); }
+    i = i + 1;
+  }
+  var j = 0;
+  while (j < LESSONS.length) {
+    if (!state.passed[LESSONS[j].id]) { return LESSONS[j]; }
+    j = j + 1;
+  }
+  if (worstId) {
+    var k = 0;
+    while (k < LESSONS.length) {
+      if (LESSONS[k].id === worstId) { return LESSONS[k]; }
+      k = k + 1;
+    }
+  }
+  return null;
+}
+function renderTutorNext() {
+  var box = document.getElementById("tutorNext");
+  if (!box) { return; }
+  var next = nextLessonSuggestion();
+  if (!next) {
+    box.innerHTML = '<p class="small">You have passed all 5 lessons. Well done. Practise in the Wallet tab next.</p>';
+    return;
+  }
+  box.innerHTML = '<p class="small">Suggested next lesson: <strong>' + next.title + '</strong></p><button class="btn secondary" type="button" onclick="showPanel(\'learn\'); openLesson(' + String(next.id) + ')">Open suggested lesson</button>';
+}
+function askSuggestion(text) {
+  var input = document.getElementById("tutorQuestion");
+  if (input) { input.value = text; }
+  askTutor();
+}
+function askTutor() {
+  var input = document.getElementById("tutorQuestion");
+  var box = document.getElementById("tutorAnswer");
+  var q = input.value.trim().toLowerCase();
+  if (!q) {
+    box.innerHTML = '<div class="tutor-answer">Please type a question first. Try: What are sats?</div>';
+    return;
+  }
+  var answer = "";
+  if (q.indexOf("real money") >= 0 || q.indexOf("is this real") >= 0 || q.indexOf("real bitcoin") >= 0 || q.indexOf("real btc") >= 0) {
+    answer = "No, this is not real money. Demo sats in LearnSats are not real BTC. The wallet is for practice only, and no real payment is made here.";
+  } else if (q.indexOf("seed") >= 0 || q.indexOf("phrase") >= 0) {
+    answer = "A seed phrase is a list of 12 or 24 simple words, in a set order, that can restore a real wallet. Never share it with anyone. Keep it on paper, offline. LearnSats has no real seed phrase. See Lesson 2.";
+  } else if (q.indexOf("lightning") >= 0) {
+    answer = "Lightning is a fast layer on top of Bitcoin for small, quick payments. It works in seconds. See Lesson 3.";
+  } else if (q.indexOf("sat") >= 0) {
+    answer = "A sat, short for satoshi, is a tiny part of a bitcoin. 100 million sats make 1 bitcoin. So you can pay a small amount, like 500 sats, without buying a whole bitcoin. See Lesson 3.";
+  } else if (q.indexOf("send") >= 0) {
+    answer = "To send sats, enter the amount and the address, check the amount, the person, and the fee, then confirm. In LearnSats, go to the Wallet tab, enter an amount and a demo address, review it, then confirm. The fee is 0 demo sats. See Lesson 4.";
+  } else if (q.indexOf("receive") >= 0 || q.indexOf("invoice") >= 0 || q.indexOf("qr") >= 0) {
+    answer = "To receive sats, create an invoice for the amount, then share it with the sender. In LearnSats, go to the Wallet tab, enter an amount, and create a demo invoice. It is a demo code only. See Lesson 4.";
+  } else if (q.indexOf("safe") >= 0 || q.indexOf("scam") >= 0) {
+    answer = "Stay safe by ignoring promises of free Bitcoin or double your money, verifying addresses, starting small, and keeping your seed phrase on paper, offline. See Lesson 5.";
+  } else if (q.indexOf("bitcoin") >= 0 || q.indexOf("what is btc") >= 0) {
+    answer = "Bitcoin is digital money that people can send to each other without a bank in the middle. Only 21 million will ever exist. Anyone with a wallet can use it. See Lesson 1.";
+  } else if (q.indexOf("wallet") >= 0) {
+    answer = "A wallet is an app that holds your Bitcoin and lets you send and receive it. The LearnSats wallet is a demo wallet for practice only, with demo sats, not real BTC. See Lesson 2.";
+  } else if (q.indexOf("earn") >= 0 || q.indexOf("quiz") >= 0) {
+    answer = "You earn 100 demo sats for each quiz you pass. Get 2 or more of the 3 questions right to pass. You earn once per lesson. Open a lesson in the Learn tab to start.";
+  } else {
+    answer = "I do not know the answer to that from the lessons. I only know the 5 lessons in LearnSats. Try asking about Bitcoin, sats, Lightning, seed phrases, sending sats, or staying safe. Or open the Learn tab and pick a lesson.";
+  }
+  var next = nextLessonSuggestion();
+  if (next) { answer = answer + "\n\nSuggested next lesson: " + next.title; }
+  box.innerHTML = '<div class="tutor-answer">' + answer + '</div>';
+  renderTutorNext();
+}
+updateWallet();
+renderLessonList();
+renderHistory();
+renderTutorNext();
+</script>
+</body>
+</html>
