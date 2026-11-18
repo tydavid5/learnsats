@@ -2,6 +2,8 @@
 
 Learn Bitcoin in plain English. Earn demo sats. Try a wallet, safely.
 
+Live demo: https://learnsats.vercel.app
+
 Built for the Dakar Bitcoin Hack by BTrust, November 2026. Devpost: https://dakar-bitcoin-hack-2026.devpost.com
 
 ## Problem
